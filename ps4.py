@@ -207,25 +207,44 @@ def main():
                     st.markdown(f"**Rating:** {product_details['Rating']}")
                     st.markdown(f"**Reviews:** {product_details['Reviews']}")
                     st.markdown("---")
-
                     # Graphical Visualization
                     st.markdown("### Graphical Visualization")
-                    if product_details['Rating'] != "N/A" and product_details['Rating']:
+                    if product_details['Rating'] and product_details['Rating'] != "N/A":
                         try:
-                            rating = float(product_details['Rating'].split()[0])
-                            fig = px.bar(x=["Rating"], y=[rating], labels={'x': '', 'y': 'Rating (out of 5)'}, 
-                                         title="Product Rating", text=[f"{rating}/5"], color_discrete_sequence=["#FF9900"])
-                            fig.update_traces(textposition='outside')
-                            st.plotly_chart(fig, use_container_width=True)
+                            rating_value = re.findall(r"\d+(\.\d+)?", product_details['Rating'])  # Extract numeric rating
+                            if rating_value:
+                                rating = float(rating_value[0])
+                                fig = px.bar(x=["Rating"], y=[rating], labels={'x': '', 'y': 'Rating (out of 5)'}, 
+                                            title="Product Rating", text=[f"{rating}/5"], color_discrete_sequence=["#FF9900"])
+                                fig.update_traces(textposition='outside')
+                                st.plotly_chart(fig, use_container_width=True)
+                            else:
+                                st.warning("⚠️ Unable to extract rating value.")
                         except Exception as e:
                             st.warning(f"⚠️ Unable to display rating: {e}")
+                    else:
+                      st.warning("⚠️ No rating data available for visualization.")
+
+
+                #     # Graphical Visualization
+                #     st.markdown("### Graphical Visualization")
+                #     if product_details['Rating'] != "N/A" and product_details['Rating']:
+                #         try:
+                #             rating = float(product_details['Rating'].split()[0])
+                #             fig = px.bar(x=["Rating"], y=[rating], labels={'x': '', 'y': 'Rating (out of 5)'}, 
+                #                          title="Product Rating", text=[f"{rating}/5"], color_discrete_sequence=["#FF9900"])
+                #             fig.update_traces(textposition='outside')
+                #             st.plotly_chart(fig, use_container_width=True)
+                #         except Exception as e:
+                #             st.warning(f"⚠️ Unable to display rating: {e}")
                     
-                    st.markdown("---")
-                    st.markdown("### Raw Data")
-                    st.json(product_details)
+                #     st.markdown("---")
+                #     st.markdown("### Raw Data")
+                #     st.json(product_details)
                     
                 except Exception as e:
                     st.error(f"❌ An error occurred: {e}")
+                    
 
         # Display History
         if st.session_state.history:
